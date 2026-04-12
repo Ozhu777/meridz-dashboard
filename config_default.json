@@ -1,0 +1,36 @@
+{
+  "geography": [
+    {"name": "🇲🇪 中东/OPEC", "enabled": true, "weight": 35, "keywords": ["OPEC", "欧佩克", "oil", "石油", "原油", "Saudi", "沙特", "Iran", "伊朗", "Israel", "以色列", "Gaza", "加沙", "中东", "Middle East", "Brent", "WTI", "OPEC+", "霍尔木兹", "Hormuz", "ceasefire", "停火"]},
+    {"name": "🇺🇸 美国", "enabled": true, "weight": 30, "keywords": ["Fed", "Federal Reserve", "美联储", "fomc", "非农", "CPI", "美国", "US", "USA", "U.S.", "treasury", "国债", "Nasdaq", "纳斯达克", "S&P", "标普", "Dow", "道琼斯", "Trump", "特朗普", "Biden", "拜登", "Congress", "国会", "SEC", "Wall Street", "华尔街", "NYSE", "NASDAQ"]},
+    {"name": "🇨🇳 中国大陆", "enabled": true, "weight": 25, "keywords": ["PBOC", "央行", "中国", "China", "A股", "政治局", "社融", "PMI", "GDP", "证监会", "沪深", "人民币", "RMB", "CNY", "北向资金", "发改委", "国常会", "LPR", "MLF", "A股", "沪深300", "上证", "深证", "创业板", "科创板"]},
+    {"name": "🇭🇰 香港", "enabled": true, "weight": 20, "keywords": ["港股", "恒生", "恒生指数", "Hang Seng", "HK", "Hong Kong", "港交所", "HKEX", "南向资金", "H股", "红筹", "中概港股"]},
+    {"name": "🇹🇼 台湾", "enabled": true, "weight": 20, "keywords": ["台湾", "Taiwan", "台股", "加权的", "TAIEX", "台积电", "TSMC", "两岸", "cross-strait", "半导体", "semiconductor Taiwan", "国台办"]},
+    {"name": "🇯🇵 日本", "enabled": true, "weight": 15, "keywords": ["BOJ", "日本央行", "Japan", "日本", "Yen", "日元", "JGB", "Nikkei", "日经", "Taro", "岸田", "Ishiba", "石破", "日股"]},
+    {"name": "🇰🇷 韩国", "enabled": true, "weight": 15, "keywords": ["Korea", "韩国", "Samsung", "三星", "KOSPI", "韩股", "SK Hynix", "现代", "Hyundai", "韩元", "Won"]},
+    {"name": "🇪🇺 欧洲", "enabled": true, "weight": 10, "keywords": ["ECB", "欧洲央行", "Europe", "EU", "欧盟", "Euro", "欧元", "Germany", "德国", "France", "法国", "Ukraine", "乌克兰", "Russia", "俄罗斯", "NATO", "北约", "Brexit", "DAX", "FTSE", "CAC"]},
+    {"name": "🌍 其他新兴市场", "enabled": false, "weight": 0, "keywords": ["India", "印度", "Brazil", "巴西", "emerging market", "新兴市场", "Turkey", "土耳其", "Argentina", "阿根廷"]}
+  ],
+  "events": [
+    {"name": "央行决议/利率变动", "enabled": true, "weight": 25, "keywords": ["rate cut", "rate hike", "加息", "降息", "利率决议", "interest rate", "FOMC", "央行决议", "基准利率", "policy rate", "rate decision", "hold rate", "维持利率"]},
+    {"name": "核心经济数据发布", "enabled": true, "weight": 20, "keywords": ["CPI", "PPI", "GDP", "PMI", "非农", "nonfarm", "employment", "失业率", "unemployment", "retail sales", "零售", "industrial", "工业", "贸易", "trade", "进出口", "通胀", "inflation", "deflation", "通缩", "社融", "M2", "信贷"]},
+    {"name": "财政政策/税收", "enabled": true, "weight": 15, "keywords": ["fiscal", "财政", "tax", "税", "budget", "预算", "stimulus", "刺激", "deficit", "赤字", "debt ceiling", "债务上限", "bond issuance", "发债", "special bond", "专项债"]},
+    {"name": "贸易政策/关税/制裁", "enabled": true, "weight": 15, "keywords": ["tariff", "关税", "sanction", "制裁", "trade war", "贸易战", "export control", "出口管制", "chip ban", "芯片禁令", "anti-dump", "反倾销", "trade deal", "贸易协定", "semiconductor"]},
+    {"name": "地缘政治/军事冲突", "enabled": true, "weight": 15, "keywords": ["war", "战争", "conflict", "冲突", "missile", "导弹", "nuclear", "核", "military", "军事", "attack", "袭击", "ceasefire", "停火", "escalation", "升级", "tension", "紧张", "geopolitical", "地缘"]},
+    {"name": "金融行业监管", "enabled": true, "weight": 10, "keywords": ["regulation", "监管", "bank", "银行", "insurance", "保险", "securities", "证券", "broker", "券商", "capital market", "资本市场", "IPO", "listing", "上市", "delist", "退市"]},
+    {"name": "科技行业监管", "enabled": true, "weight": 10, "keywords": ["antitrust", "反垄断", "AI", "人工智能", "tech regulation", "科技监管", "data security", "数据安全", "GDPR", "privacy", "隐私", "Big Tech", "科技巨头", "ChatGPT", "OpenAI", "chip", "芯片"]},
+    {"name": "房地产政策", "enabled": true, "weight": 10, "keywords": ["real estate", "房地产", "housing", "住房", "property", "楼市", "限购", "mortgage", "房贷", "Evergrande", "恒大", "Country Garden", "碧桂园", "land", "土地"]},
+    {"name": "企业重大事件", "enabled": false, "weight": 0, "keywords": ["IPO", "merger", "并购", "bankruptcy", "破产", "CEO", "earnings", "财报", "profit", "利润", "revenue"]},
+    {"name": "天气/自然灾害", "enabled": false, "weight": 0, "keywords": ["earthquake", "地震", "hurricane", "飓风", "flood", "洪水", "typhoon", "台风", "drought", "干旱"]}
+  ],
+  "assets": [
+    {"name": "利率/债券市场", "enabled": true, "weight": 25, "keywords": ["bond", "债券", "yield", "收益率", "10-year", "10年期", "treasury", "国债", "credit spread", "信用利差", "spread", "利差"]},
+    {"name": "美元/人民币汇率", "enabled": true, "weight": 20, "keywords": ["USD", "CNY", "美元指数", "dollar index", "DXY", "exchange rate", "汇率", "devaluation", "贬值", "appreciation", "升值", "forex", "外汇"]},
+    {"name": "大宗商品", "enabled": true, "weight": 20, "keywords": ["gold", "黄金", "copper", "铜", "oil", "石油", "crude", "原油", "iron ore", "铁矿石", "commodity", "大宗", "silver", "白银", "lithium", "锂"]},
+    {"name": "VIX/恐慌指数", "enabled": true, "weight": 15, "keywords": ["VIX", "恐慌指数", "fear gauge", "volatility", "波动率", "put/call", "risk-off", "避险", "safe haven", "flight to quality"]},
+    {"name": "加密货币", "enabled": false, "weight": 0, "keywords": ["Bitcoin", "比特币", "BTC", "Ethereum", "以太坊", "ETH", "crypto", "加密", "blockchain", "区块链"]}
+  ],
+  "filter": {
+    "min_importance": 15,
+    "mode": "important_only"
+  }
+}
