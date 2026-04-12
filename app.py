@@ -263,11 +263,15 @@ if st.session_state.news_data:
     active_med = st.session_state.filter_mode == "medium"
     active_q = st.session_state.filter_mode == "qualified"
 
+    all_cls = "active" if active_all else ""
+    high_cls = "active" if active_high else ""
+    med_cls = "active" if active_med else ""
+    q_cls = "active" if active_q else ""
+
     sc1.markdown(
-        f"<div class='stat-card {\"active\" if active_all else \"\"}' "
-        f"onclick=\"window.parent.postMessage('{{action: \"set_filter\", value: \"all\"}}', '*')\">"
-        f"<div class='stat-number'>{len(all_data)}</div>"
-        f"<div class='stat-label'>📰 总新闻 {'◀ 当前' if active_all else ''}</div></div>",
+        f'<div class="stat-card {all_cls}">'
+        f'<div class="stat-number">{len(all_data)}</div>'
+        f'<div class="stat-label">📰 总新闻 {"◀ 当前" if active_all else ""}</div></div>',
         unsafe_allow_html=True,
     )
     if sc1.button("📰 总新闻", use_container_width=True, key="filter_all"):
@@ -275,9 +279,9 @@ if st.session_state.news_data:
         st.rerun()
 
     sc2.markdown(
-        f"<div class='stat-card {\"active\" if active_high else \"\"}'>"
-        f"<div class='stat-number' style='color:{ACCENT_RED}'>{high_count}</div>"
-        f"<div class='stat-label'>🔥 高重要性 {'◀ 当前' if active_high else ''}</div></div>",
+        f'<div class="stat-card {high_cls}">'
+        f'<div class="stat-number" style="color:{ACCENT_RED}">{high_count}</div>'
+        f'<div class="stat-label">🔥 高重要性 {"◀ 当前" if active_high else ""}</div></div>',
         unsafe_allow_html=True,
     )
     if sc2.button("🔥 高重要性", use_container_width=True, key="filter_high"):
@@ -285,9 +289,9 @@ if st.session_state.news_data:
         st.rerun()
 
     sc3.markdown(
-        f"<div class='stat-card {\"active\" if active_med else \"\"}'>"
-        f"<div class='stat-number' style='color:{ACCENT_AMBER}'>{med_count}</div>"
-        f"<div class='stat-label'>⚡ 中重要性 {'◀ 当前' if active_med else ''}</div></div>",
+        f'<div class="stat-card {med_cls}">'
+        f'<div class="stat-number" style="color:{ACCENT_AMBER}">{med_count}</div>'
+        f'<div class="stat-label">⚡ 中重要性 {"◀ 当前" if active_med else ""}</div></div>',
         unsafe_allow_html=True,
     )
     if sc3.button("⚡ 中重要性", use_container_width=True, key="filter_med"):
@@ -295,9 +299,9 @@ if st.session_state.news_data:
         st.rerun()
 
     sc4.markdown(
-        f"<div class='stat-card {\"active\" if active_q else \"\"}'>"
-        f"<div class='stat-number' style='color:{PRIMARY}'>{len(qualified)}</div>"
-        f"<div class='stat-label'>✅ 符合筛选 {'◀ 当前' if active_q else ''}</div></div>",
+        f'<div class="stat-card {q_cls}">'
+        f'<div class="stat-number" style="color:{PRIMARY}">{len(qualified)}</div>'
+        f'<div class="stat-label">✅ 符合筛选 {"◀ 当前" if active_q else ""}</div></div>',
         unsafe_allow_html=True,
     )
     if sc4.button("✅ 符合筛选", use_container_width=True, key="filter_q"):
