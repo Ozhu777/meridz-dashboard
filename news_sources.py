@@ -72,10 +72,17 @@ def _get_event_boost(title, summary=""):
 
 
 def _clean_html(text):
-    """清理 HTML 标签"""
+    """清理 HTML 标签和多余空白"""
     if not text:
         return ""
-    return re.sub(r"<[^>]+>", "", text).strip()
+    # 移除 HTML 标签
+    text = re.sub(r"<[^>]+>", "", text)
+    # 移除 HTML 实体
+    text = re.sub(r"&[a-zA-Z]+;", " ", text)
+    text = re.sub(r"&#\d+;", " ", text)
+    # 移除多余空白和换行
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
 
 # ─── Finnhub 全球市场新闻 ─────────────────────────────────
@@ -93,8 +100,8 @@ def fetch_finnhub_news(api_key="", limit=50):
             for item in data[:limit]:
                 news_list.append({
                     "id": hashlib.md5((item.get("url", "") or "").encode()).hexdigest(),
-                    "title": item.get("headline", ""),
-                    "summary": item.get("summary", "")[:200],
+                    "title": _clean_html(item.get("headline", "")),
+                    "summary": _clean_html(item.get("summary", ""))[:200],
                     "source": item.get("source", "Finnhub"),
                     "url": item.get("url", ""),
                     "image": item.get("image", ""),
@@ -128,8 +135,8 @@ def _fetch_eastmoney_column(column_id, source_label, limit=50):
             data = resp.json()
             items = data.get("data", {}).get("list", []) or []
             for item in items:
-                title = item.get("title", "")
-                summary = (item.get("summary", "") or "")[:200]
+                title = _clean_html(item.get("title", ""))
+                summary = _clean_html(item.get("summary", "") or "")[:200]
                 if _is_brokerage_content(title, summary):
                     continue  # 跳过券商研报类
                 news_list.append({
@@ -184,8 +191,8 @@ def fetch_wallstreetcn_news(limit=40):
             if not item_id:
                 continue
             # 优先用 title，其次用 content_text
-            title = item.get("title", "").strip()
-            content_text = (item.get("content_text", "") or "").strip()
+            title = _clean_html(item.get("title", "").strip())
+            content_text = _clean_html((item.get("content_text", "") or "").strip())
             if not title:
                 title = content_text[:60] if content_text else ""
             if not title:
@@ -248,8 +255,8 @@ def fetch_rss_feeds(max_per_source=20):
             for entry in feed.entries[:max_per_source]:
                 published = entry.get("published_parsed", entry.get("updated_parsed"))
                 ts = int(time.mktime(published)) if published else int(time.time())
-                title = entry.get("title", "")
-                summary = entry.get("summary", "")[:200] if entry.get("summary") else ""
+                title = _clean_html(entry.get("title", ""))
+                summary = _clean_html(entry.get("summary", ""))[:200] if entry.get("summary") else ""
                 if _is_brokerage_content(title, summary):
                     continue
                 news_list.append({
