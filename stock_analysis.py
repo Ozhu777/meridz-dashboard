@@ -4,35 +4,43 @@
 """
 
 from __future__ import annotations
+from typing import Optional
 import yfinance as yf
 from datetime import datetime, timedelta
 
 
 def search_ticker(query: str) -> Optional[dict]:
-    """根据公司名称或代码搜索，返回第一个匹配的 ticker 信息"""
+    """根据公司名称或代码搜索，返回第一个匹配的 ticker info"""
     if not query or not query.strip():
         return None
     query = query.strip()
 
-    # 先尝试直接作为 ticker
+    # 先尝试直接作为 ticker（不转大写）
     ticker = yf.Ticker(query)
-    info = ticker.info
-    if info and info.get("regularMarketPrice") is not None:
-        return info
-
-    # 尝试作为公司名搜索（yfinance 没有直接搜索，用 .search）
     try:
-        results = yf.Search(query, max_results=3, news_count=0)
+        info = ticker.info
+        if info and (info.get("regularMarketPrice") is not None or info.get("currentPrice") is not None):
+            return info
+    except Exception:
+        pass
+
+    # 尝试搜索公司名
+    try:
+        results = yf.Search(query, max_results=5, news_count=0)
         quotes = getattr(results, "quotes", [])
-        if quotes and len(quotes) > 0:
-            best = quotes[0]
-            symbol = best.get("symbol", "")
-            if symbol:
-                ticker = yf.Ticker(symbol)
-                info = ticker.info
-                if info:
-                    info["_matched_symbol"] = symbol
-                    return info
+        if quotes:
+            for q in quotes:
+                symbol = q.get("symbol", "")
+                if not symbol:
+                    continue
+                try:
+                    t = yf.Ticker(symbol)
+                    info = t.info
+                    if info and (info.get("regularMarketPrice") is not None or info.get("currentPrice") is not None):
+                        info["_matched_symbol"] = symbol
+                        return info
+                except Exception:
+                    continue
     except Exception:
         pass
 
@@ -40,12 +48,12 @@ def search_ticker(query: str) -> Optional[dict]:
 
 
 def get_stock_data(query: str) -> Optional[dict]:
-    """获取完整的公司分析数据，返回结构化字典"""
+    """获取完整的公司分析数据"""
     info = search_ticker(query)
     if not info:
         return None
 
-    symbol = info.get("_matched_symbol", "") or info.get("symbol", query)
+    symbol = info.pop("_matched_symbol", "") or info.get("symbol", query)
     ticker = yf.Ticker(symbol)
 
     result = {
@@ -97,24 +105,23 @@ def get_stock_data(query: str) -> Optional[dict]:
         "profit_margins": info.get("profitMargins"),
     }
 
-    # ─── 过去3年 + 未来预期财务数据 ───
+    # ─── 财务数据 ───
     try:
-        # 财务数据
         income_stmt = ticker.income_stmt
         if income_stmt is not None and not income_stmt.empty:
-            result["financials"] = _extract_financials(income_stmt, "annual")
+            result["financials"] = _extract_financials(income_stmt)
         else:
             result["financials"] = None
     except Exception:
         result["financials"] = None
 
-    # 分析师预期
+    # ─── 分析师预期 ───
     try:
         result["estimates"] = _get_analyst_estimates(info)
     except Exception:
         result["estimates"] = None
 
-    # ─── 股价历史（用于走势图）───
+    # ─── 股价历史 ───
     try:
         hist = ticker.history(period="1y")
         if hist is not None and not hist.empty:
@@ -128,14 +135,13 @@ def get_stock_data(query: str) -> Optional[dict]:
 
 
 def _extract_financials(income_stmt, period="annual"):
-    """从 income_stmt 提取过去3年的关键数据"""
     years = []
     revenue = {}
     net_income = {}
     eps = {}
     gross_profit = {}
 
-    for col in income_stmt.columns[:4]:  # 最近4个年度
+    for col in income_stmt.columns[:4]:
         year = str(col.year) if hasattr(col, "year") else str(col)[:4]
         years.append(year)
         revenue[year] = income_stmt.loc["Total Revenue", col] if "Total Revenue" in income_stmt.index else None
@@ -145,7 +151,6 @@ def _extract_financials(income_stmt, period="annual"):
         )
         gross_profit[year] = income_stmt.loc["Gross Profit", col] if "Gross Profit" in income_stmt.index else None
 
-    # 计算毛利率和净利率
     gross_margin = {}
     net_margin = {}
     for y in years:
@@ -168,11 +173,8 @@ def _extract_financials(income_stmt, period="annual"):
     }
 
 
-def _get_analyst_estimates(info: dict) -> Optional[dict]:
-    """获取分析师预期数据"""
+def _get_analyst_estimates(info):
     estimates = {}
-
-    # 分析师目标价
     target_mean = info.get("targetMeanPrice")
     target_high = info.get("targetHighPrice")
     target_low = info.get("targetLowPrice")
@@ -185,33 +187,19 @@ def _get_analyst_estimates(info: dict) -> Optional[dict]:
         "current": current,
         "upside_pct": ((target_mean / current) - 1) * 100 if current and target_mean else None,
     }
-
-    # 分析师数量和评级
     estimates["analysts"] = {
         "count": info.get("numberOfAnalystOpinions"),
         "recommendation": _map_recommendation(info.get("recommendationKey")),
     }
-
-    # 未来预期 EPS 和营收（从 info 字段获取）
-    # yfinance 提供 nextYear 和 nextQuarter 的估计
-    rev_growth = info.get("revenueGrowth")
-    earnings_growth = info.get("earningsGrowth")
-    earnings_growth_next = info.get("earningsQuarterlyGrowth")
-
     estimates["growth"] = {
-        "revenue_growth": rev_growth,
-        "earnings_growth": earnings_growth,
-        "earnings_growth_next_q": earnings_growth_next,
+        "revenue_growth": info.get("revenueGrowth"),
+        "earnings_growth": info.get("earningsGrowth"),
     }
-
-    # 未来几年 EPS 预期
-    forward_eps = info.get("forwardEps")
-    estimates["forward_eps"] = forward_eps
-
+    estimates["forward_eps"] = info.get("forwardEps")
     return estimates
 
 
-def _map_recommendation(key: str | None) -> str:
+def _map_recommendation(key):
     if not key:
         return "N/A"
     mapping = {
@@ -225,7 +213,6 @@ def _map_recommendation(key: str | None) -> str:
 
 
 def format_number(value, suffix="", decimals=1):
-    """格式化大数字（亿/万）"""
     if value is None:
         return "N/A"
     try:
@@ -245,7 +232,6 @@ def format_number(value, suffix="", decimals=1):
 
 
 def format_pct(value):
-    """格式化百分比"""
     if value is None:
         return "N/A"
     try:
