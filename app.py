@@ -126,7 +126,7 @@ def _fetch_and_score(finnhub_key):
 if "news_data" not in st.session_state:
     st.session_state.news_data = []
     st.session_state.last_fetch = None
-    st.session_state.finnhub_key = ""
+    st.session_state.finnhub_key = "d7dp70hr01qpbt05cd7gd7dp70hr01qpbt05cd80"
     st.session_state.fetched_once = False
 
 if "config" not in st.session_state:
@@ -143,14 +143,7 @@ with st.sidebar:
     st.markdown("### ⚙️ 定制化设置")
     st.caption("调整后点击「保存」生效")
 
-    st.markdown("---")
-    st.markdown("**🔑 API 配置**")
-    finnhub_key = st.text_input(
-        "Finnhub API Key", value=st.session_state.finnhub_key,
-        type="password", help="finnhub.io 免费注册获取",
-    )
-    st.session_state.finnhub_key = finnhub_key
-    st.session_state.config.setdefault("push", {})["finnhub_key"] = finnhub_key
+    # Finnhub API Key 已内置，无需手动输入
 
     st.markdown("---")
     st.markdown("**🌍 地理关注区域**")
@@ -215,7 +208,7 @@ with st.sidebar:
 # ═══════════════════════════════════════════════════════════
 if not st.session_state.fetched_once:
     with st.spinner("🌐 正在加载全球新闻..."):
-        st.session_state.news_data = _fetch_and_score(finnhub_key)
+        st.session_state.news_data = _fetch_and_score(st.session_state.finnhub_key)
         st.session_state.last_fetch = datetime.now(
             timezone(timedelta(hours=8))
         ).strftime("%Y-%m-%d %H:%M")
@@ -231,7 +224,7 @@ col_btn, col_title, col_time = st.columns([1, 3, 1.5])
 with col_btn:
     if st.button("🔄 刷新新闻", use_container_width=True, type="primary"):
         with st.spinner("采集新闻中..."):
-            st.session_state.news_data = _fetch_and_score(finnhub_key)
+            st.session_state.news_data = _fetch_and_score(st.session_state.finnhub_key)
             st.session_state.last_fetch = now_str
 
 with col_title:
